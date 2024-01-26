@@ -1,5 +1,7 @@
 import {LikeModelClass} from "../db/db";
+import {injectable} from "inversify";
 
+@injectable()
 export class LikesQueryRepository {
     async getLikeStatusCommentForUser(commentId: string, userId: string): Promise<string | null> {
         const likeStatus = await LikeModelClass

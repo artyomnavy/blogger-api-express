@@ -29,6 +29,7 @@ import {AuthController} from "./controllers/auth-controller";
 import {LikesRepository} from "./repositories/likes-db-repository";
 import {LikesQueryRepository} from "./repositories/likes-db-query-repository";
 import {Container} from "inversify";
+import {CommentMapper} from "./types/comment/mapper";
 
 export const container = new Container()
 
@@ -70,3 +71,6 @@ container.bind(CommentsRepository).to(CommentsRepository)
 container.bind(DevicesRepository).to(DevicesRepository)
 container.bind(AuthRepository).to(AuthRepository)
 container.bind(LikesRepository).to(LikesRepository)
+
+// Instances mapper
+container.bind(CommentMapper).to(CommentMapper)

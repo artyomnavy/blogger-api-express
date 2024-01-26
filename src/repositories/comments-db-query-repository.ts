@@ -1,12 +1,14 @@
 import {PaginatorCommentModel} from "../types/comment/input";
 import {OutputCommentType, PaginatorCommentsType} from "../types/comment/output";
 import {CommentModelClass} from "../db/db";
-import {commentMapper} from "../types/comment/mapper";
+import {CommentMapper} from "../types/comment/mapper";
 import {ObjectId} from "mongodb";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 
 @injectable()
 export class CommentsQueryRepository {
+    constructor(@inject(CommentMapper) protected commentMapper: CommentMapper) {
+    }
     async getCommentById(commentId: string, userId?: string): Promise<OutputCommentType | null> {
         const comment = await CommentModelClass
             .findOne({_id: new ObjectId(commentId)}).lean()
@@ -14,7 +16,7 @@ export class CommentsQueryRepository {
         if (!comment) {
             return null
         } else {
-            return await commentMapper(comment, userId)
+            return await this.commentMapper.getMapComment(comment, userId)
         }
     }
     async getCommentsByPostId(QueryData: PaginatorCommentModel & {postId: string} & {userId?: string}): Promise<PaginatorCommentsType> {
@@ -53,7 +55,7 @@ export class CommentsQueryRepository {
             page: +pageNumber,
             pageSize: +pageSize,
             totalCount: +totalCount,
-            items: await Promise.all(comments.map(comment => commentMapper(comment, userId)))
+            items: await Promise.all(comments.map(comment => this.commentMapper.getMapComment(comment, userId)))
         }
     }
 }

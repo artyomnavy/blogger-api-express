@@ -1,13 +1,14 @@
 import {CommentType, OutputCommentType} from "../types/comment/output";
 import {ObjectId, WithId} from "mongodb";
 import {CommentModelClass} from "../db/db";
-import {commentMapper} from "../types/comment/mapper";
+import {CommentMapper} from "../types/comment/mapper";
 import {CreateAndUpdateCommentModel} from "../types/comment/input";
-import {likesStatuses} from "../utils";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 
 @injectable()
 export class CommentsRepository {
+    constructor(@inject(CommentMapper) protected commentMapper: CommentMapper) {
+    }
     async deleteComment(id: string): Promise<boolean>{
         const resultDeleteComment = await CommentModelClass
             .deleteOne({_id: new ObjectId(id)})
@@ -16,7 +17,7 @@ export class CommentsRepository {
     async createComment(newComment: WithId<CommentType>): Promise<OutputCommentType> {
         const resultCreateComment = await CommentModelClass
             .create(newComment)
-        return commentMapper(newComment)
+        return await this.commentMapper.getMapComment(newComment)
     }
     async updateComment(id: string, updateData: CreateAndUpdateCommentModel): Promise<boolean>{
         const resultUpdateComment = await CommentModelClass
