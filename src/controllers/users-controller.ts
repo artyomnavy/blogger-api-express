@@ -4,7 +4,7 @@ import {Response} from "express";
 import {UsersService} from "../domain/users-service";
 import {HTTP_STATUSES} from "../utils";
 import {UsersQueryRepository} from "../repositories/users-db-query-repository";
-import {injectable} from "inversify";
+import {injectable, inject} from "inversify";
 
 @injectable()
 export class UsersController {

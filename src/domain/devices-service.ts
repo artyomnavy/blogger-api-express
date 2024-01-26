@@ -1,6 +1,6 @@
 import {DevicesRepository} from "../repositories/devices-db-repository";
 import {DeviceSession, DeviceSessionType} from "../types/device/output";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 
 @injectable()
 export class DevicesService {

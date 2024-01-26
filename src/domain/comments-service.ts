@@ -4,7 +4,7 @@ import {ObjectId} from "mongodb";
 import {CommentsRepository} from "../repositories/comments-db-repository";
 import {likesStatuses} from "../utils";
 import {LikesRepository} from "../repositories/likes-db-repository";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 
 @injectable()
 export class CommentsService {

@@ -5,7 +5,7 @@ import {CommentsQueryRepository} from "../repositories/comments-db-query-reposit
 import {HTTP_STATUSES, likesStatuses} from "../utils";
 import {CommentsService} from "../domain/comments-service";
 import {JwtService} from "../application/jwt-service";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 
 @injectable()
 export class CommentsController {

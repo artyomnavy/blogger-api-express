@@ -15,7 +15,7 @@ import {CommentsService} from "../domain/comments-service";
 import {CreateAndUpdatePostModel, PaginatorPostModel} from "../types/post/input";
 import {PostsService} from "../domain/posts-service";
 import {JwtService} from "../application/jwt-service";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 
 @injectable()
 export class PostsController {

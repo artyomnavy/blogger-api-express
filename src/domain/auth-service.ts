@@ -9,7 +9,7 @@ import {UsersQueryRepository} from "../repositories/users-db-query-repository";
 import {add} from "date-fns/add";
 import {AttemptType} from "../types/auth/output";
 import {AuthRepository} from "../repositories/auth-db-repository";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 
 @injectable()
 export class AuthService {

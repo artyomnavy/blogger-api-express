@@ -5,7 +5,7 @@ import {UsersRepository} from "../repositories/users-db-repository";
 import bcrypt from 'bcrypt';
 import {AuthLoginModel} from "../types/auth/input";
 import {UsersQueryRepository} from "../repositories/users-db-query-repository";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 
 @injectable()
 export class UsersService {

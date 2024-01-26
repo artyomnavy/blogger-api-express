@@ -2,7 +2,7 @@ import {ObjectId} from "mongodb";
 import {BlogsRepository} from "../repositories/blogs-db-repository";
 import {CreateAndUpdateBlogModel} from "../types/blog/input";
 import {Blog, OutputBlogType} from "../types/blog/output";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 
 @injectable()
 export class BlogsService {

@@ -9,13 +9,15 @@ import {DevicesService} from "../domain/devices-service";
 import {UsersQueryRepository} from "../repositories/users-db-query-repository";
 import {AuthService} from "../domain/auth-service";
 import {CreateUserModel} from "../types/user/input";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthController {
-    constructor(protected authService: AuthService,
-                protected usersService: UsersService,
-                protected usersQueryRepository: UsersQueryRepository,
-                protected devicesService: DevicesService,
-                protected jwtService: JwtService) {
+    constructor(@inject(AuthService) protected authService: AuthService,
+                @inject(UsersService) protected usersService: UsersService,
+                @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository,
+                @inject(DevicesService) protected devicesService: DevicesService,
+                @inject(JwtService) protected jwtService: JwtService) {
     }
     async loginUser(req: RequestWithBody<AuthLoginModel>, res: Response) {
         const {

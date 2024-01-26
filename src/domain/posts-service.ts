@@ -3,7 +3,7 @@ import {CreateAndUpdatePostModel} from "../types/post/input";
 import {ObjectId} from "mongodb";
 import {PostsRepository} from "../repositories/posts-db-repository";
 import {BlogsQueryRepository} from "../repositories/blogs-db-query-repository";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 
 @injectable()
 export class PostsService {
