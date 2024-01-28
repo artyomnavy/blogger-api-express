@@ -6,6 +6,7 @@ import {CommentType, Likes} from "../../types/comment/output";
 import {DeviceSessionType} from "../../types/device/output";
 import {AttemptType} from "../../types/auth/output";
 
+// Blog schema
 export const blogSchema = new mongoose.Schema<BlogType>({
     name: {type: String, required: true},
     description: {type: String, required: true},
@@ -14,6 +15,7 @@ export const blogSchema = new mongoose.Schema<BlogType>({
     isMembership: {type: Boolean, required: true}
 })
 
+// Post schema
 export const postSchema = new mongoose.Schema<PostType>({
     title: {type: String, required: true},
     shortDescription: {type: String, required: true},
@@ -23,6 +25,7 @@ export const postSchema = new mongoose.Schema<PostType>({
     createdAt: {type: Date, required: true}
 })
 
+// User schema
 export const userSchema = new mongoose.Schema<UserAccountType>({
     accountData: {
         login: {type: String, required: true},
@@ -37,6 +40,7 @@ export const userSchema = new mongoose.Schema<UserAccountType>({
     }
 })
 
+// Comment schema
 export const commentSchema = new mongoose.Schema<CommentType>({
     content: {type: String, required: true},
     commentatorInfo: {
@@ -52,6 +56,7 @@ export const commentSchema = new mongoose.Schema<CommentType>({
     }
 })
 
+// Device schema
 export const deviceSessionSchema = new mongoose.Schema<DeviceSessionType>({
     iat: {type: Date, required: true},
     exp: {type: Date, required: true},
@@ -61,12 +66,14 @@ export const deviceSessionSchema = new mongoose.Schema<DeviceSessionType>({
     userId: {type: String, required: true}
 })
 
+// Attempt schema
 export const attemptSchema = new mongoose.Schema<AttemptType>({
     ip: {type: String, required: true},
     url: {type: String, required: true},
     date: {type: Date, required: true}
 })
 
+// Like schema
 export const likeSchema = new mongoose.Schema<Likes>({
     commentId: {type: String, required: true},
     userId: {type: String, required: true},

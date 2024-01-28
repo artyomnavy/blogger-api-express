@@ -1,5 +1,5 @@
 import {CreateAndUpdateCommentModel} from "../types/comment/input";
-import {OutputCommentType, Comment, Likes} from "../types/comment/output";
+import {OutputCommentType, Comment} from "../types/comment/output";
 import {ObjectId} from "mongodb";
 import {CommentsRepository} from "../repositories/comments-db-repository";
 import {likesStatuses} from "../utils";
@@ -42,25 +42,31 @@ export class CommentsService {
 
         return createdComment
     }
-    async deleteLikeStatus(commentId: string, userId: string): Promise<boolean> {
-        return await this.likesRepository
-            .deleteLikeStatus(commentId, userId)
-    }
-    async createLikeStatus(commentId: string, userId: string, likeStatus: string): Promise<Likes> {
-        return await this.likesRepository
-            .createLikeStatus(commentId, userId, likeStatus)
-    }
-
-    async updateLikeStatus(commentId: string, userId: string, likeStatus: string): Promise<boolean> {
-        return await this.likesRepository
-            .updateLikeStatus(commentId, userId, likeStatus)
-    }
     async changeLikeStatusCommentForUser(
-        commentId: string,
-        likeStatus: string,
-        likesCount: number,
-        dislikesCount: number,
-        currentMyStatus: string): Promise<boolean> {
+        userId: string,
+        comment: OutputCommentType,
+        likeStatus: string): Promise<boolean> {
+
+        const currentMyStatus = comment.likesInfo.myStatus
+        let likesCount = comment.likesInfo.likesCount
+        let dislikesCount = comment.likesInfo.dislikesCount
+
+        if (likeStatus === currentMyStatus) {
+            return true
+        }
+
+        if (currentMyStatus === likesStatuses.none) {
+            await this.likesRepository
+                .createLikeStatus(comment.id, userId, likeStatus)
+        }
+
+        if (likeStatus === likesStatuses.none) {
+            await this.likesRepository
+                .deleteLikeStatus(comment.id, userId)
+        }
+
+        await this.likesRepository
+            .updateLikeStatus(comment.id, userId, likeStatus)
 
         if (likeStatus === likesStatuses.none && currentMyStatus === likesStatuses.like) {
             likesCount--
@@ -89,6 +95,6 @@ export class CommentsService {
         }
 
         return await this.commentsRepository
-            .changeLikeStatusCommentForUser(commentId, likeStatus, likesCount, dislikesCount)
+            .changeLikeStatusCommentForUser(comment.id, likeStatus, likesCount, dislikesCount)
     }
 }

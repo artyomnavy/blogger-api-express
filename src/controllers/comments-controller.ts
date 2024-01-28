@@ -2,7 +2,7 @@ import {Params, RequestWithParams, RequestWithParamsAndBody} from "../types/comm
 import {CreateAndUpdateCommentModel} from "../types/comment/input";
 import {Response} from "express";
 import {CommentsQueryRepository} from "../repositories/comments-db-query-repository";
-import {HTTP_STATUSES, likesStatuses} from "../utils";
+import {HTTP_STATUSES} from "../utils";
 import {CommentsService} from "../domain/comments-service";
 import {JwtService} from "../application/jwt-service";
 import {inject, injectable} from "inversify";
@@ -99,30 +99,8 @@ export class CommentsController {
             return
         }
 
-        const currentMyStatus = comment.likesInfo.myStatus
-        const likesCount = comment.likesInfo.likesCount
-        const dislikesCount = comment.likesInfo.dislikesCount
-
-        if (likeStatus === currentMyStatus) {
-            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-            return
-        }
-
-        if (currentMyStatus === likesStatuses.none) {
-            await this.commentsService
-                .createLikeStatus(commentId, userId, likeStatus)
-        }
-
-        if (likeStatus === likesStatuses.none) {
-            await this.commentsService
-                .deleteLikeStatus(commentId, userId)
-        }
-
-        await this.commentsService
-            .updateLikeStatus(commentId, userId, likeStatus)
-
         const isUpdated = await this.commentsService
-            .changeLikeStatusCommentForUser(commentId, likeStatus, likesCount, dislikesCount, currentMyStatus)
+            .changeLikeStatusCommentForUser(userId, comment, likeStatus)
 
         if (isUpdated) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
