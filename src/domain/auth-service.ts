@@ -1,7 +1,6 @@
 import {CreateUserModel} from "../types/user/input";
-import {OutputUserType, User} from "../types/user/output";
+import {OutputUserType} from "../types/user/output";
 import bcrypt from "bcrypt";
-import {ObjectId} from "mongodb";
 import {v4 as uuidv4} from 'uuid';
 import {UsersRepository} from "../repositories/users-db-repository";
 import {EmailsManager} from "../managers/emails-manager";
@@ -10,6 +9,7 @@ import {add} from "date-fns/add";
 import {AttemptType} from "../types/auth/output";
 import {AuthRepository} from "../repositories/auth-db-repository";
 import {inject, injectable} from "inversify";
+import {UserModelClass} from "../db/db";
 
 @injectable()
 export class AuthService {
@@ -21,25 +21,9 @@ export class AuthService {
     async createUserByRegistration(createData: CreateUserModel): Promise<OutputUserType | null> {
         const passwordHash = await bcrypt.hash(createData.password, 10)
 
-        const newUser = new User(
-            new ObjectId(),
-            {
-                login: createData.login,
-                password: passwordHash,
-                email: createData.email,
-                createdAt: new Date()
-            },
-            {
-                confirmationCode: uuidv4(),
-                expirationDate: add(new Date(), {
-                    minutes: 10
-                }),
-                isConfirmed: false
-            }
-        )
+        const newUser = UserModelClass.createUser(createData.login, createData.email, passwordHash)
 
-        const createdUser = await this.usersRepository
-            .createUser(newUser)
+        const createdUser = await this.usersRepository.save(newUser)
 
         try {
             await this.emailsManager
@@ -70,8 +54,17 @@ export class AuthService {
         const user = await this.usersQueryRepository
             .getUserByConfirmationCode(code)
 
-        return await this.usersRepository
-            .updateConfirmStatus(user!._id)
+        if (!user) {
+            return false
+        }
+
+        if (user.canBeConfirmed(code)){
+            user.confirm(code)
+            await this.usersRepository.save(user)
+            return true
+        }
+
+        return false
     }
     async resendingEmail(email: string, newCode: string) {
         try {

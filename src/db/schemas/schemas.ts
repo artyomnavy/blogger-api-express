@@ -1,10 +1,15 @@
 import * as mongoose from "mongoose";
 import {BlogType} from "../../types/blog/output";
 import {PostType} from "../../types/post/output";
-import {UserAccountType} from "../../types/user/output";
+import {User, UserAccountType} from "../../types/user/output";
 import {CommentType, Likes} from "../../types/comment/output";
 import {DeviceSessionType} from "../../types/device/output";
 import {AttemptType} from "../../types/auth/output";
+import {HydratedDocument, Model} from "mongoose";
+import {UserModelClass} from "../db";
+import {ObjectId} from "mongodb";
+import {v4 as uuidv4} from "uuid";
+import {add} from "date-fns/add";
 
 // Blog schema
 export const blogSchema = new mongoose.Schema<BlogType>({
@@ -26,7 +31,23 @@ export const postSchema = new mongoose.Schema<PostType>({
 })
 
 // User schema
-export const userSchema = new mongoose.Schema<UserAccountType>({
+export type UserAccountMethodsType = {
+    canBeConfirmed: (code: string) => boolean
+    confirm: (code: string) => void
+}
+
+export type UserModelType = Model<UserAccountType, {}, UserAccountMethodsType>
+export type UserModelStaticType = Model<UserAccountType> & {
+    createUser(login: string, email: string, passwordHash: string): HydratedDocument<UserAccountType, UserAccountMethodsType>
+}
+
+export type userModelFullType = UserModelType & UserModelStaticType
+
+export const userSchema = new mongoose.Schema<
+    UserAccountType,
+    userModelFullType,
+    UserAccountMethodsType
+    >({
     accountData: {
         login: {type: String, required: true},
         password: {type: String, required: true},
@@ -38,6 +59,43 @@ export const userSchema = new mongoose.Schema<UserAccountType>({
         expirationDate: Date,
         isConfirmed: {type: Boolean, required: true}
     }
+})
+
+userSchema.static('createUser', function createUser(login: string, email: string, passwordHash: string) {
+    return new UserModelClass(new User(
+        new ObjectId(),
+        {
+            login: login,
+            password: passwordHash,
+            email: email,
+            createdAt: new Date()
+        },
+        {
+            confirmationCode: uuidv4(),
+            expirationDate: add(new Date(), {
+                minutes: 10
+            }),
+            isConfirmed: false
+        }
+    ))
+})
+
+userSchema.method('canBeConfirmed', function canBeConfirmed(code: string) {
+    return this.emailConfirmation.confirmationCode === code &&
+        (this.emailConfirmation.expirationDate !== null &&
+            this.emailConfirmation.expirationDate > new Date())
+})
+
+userSchema.method('confirm', function confirm(code: string) {
+    if (!this.canBeConfirmed(code)) {
+        throw new Error('Account can\'t be confirmed')
+    }
+
+    if (this.emailConfirmation.isConfirmed) {
+        throw new Error('Already confirmed account can\'t be confirmed again')
+    }
+
+    this.emailConfirmation.isConfirmed = true
 })
 
 // Comment schema
@@ -56,7 +114,7 @@ export const commentSchema = new mongoose.Schema<CommentType>({
     }
 })
 
-// Device schema
+// DeviceSession schema
 export const deviceSessionSchema = new mongoose.Schema<DeviceSessionType>({
     iat: {type: Date, required: true},
     exp: {type: Date, required: true},

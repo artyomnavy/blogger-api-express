@@ -16,13 +16,18 @@ export class UsersRepository {
             .deleteOne({_id: new ObjectId(id)})
         return resultDeleteUser.deletedCount === 1
     }
-    async updateConfirmStatus(_id: ObjectId): Promise<boolean> {
-        const resultUpdateConfirmStatus = await UserModelClass
-            .updateOne({_id}, {
-                $set: {'emailConfirmation.isConfirmed': true}
-            })
-        return resultUpdateConfirmStatus.modifiedCount === 1
+
+    async save(model: any) {
+        return await model.save()
     }
+
+    // async updateConfirmStatus(_id: ObjectId): Promise<boolean> {
+    //     const resultUpdateConfirmStatus = await UserModelClass
+    //         .updateOne({_id}, {
+    //             $set: {'emailConfirmation.isConfirmed': true}
+    //         })
+    //     return resultUpdateConfirmStatus.modifiedCount === 1
+    // }
     async updateConfirmationCode(email: string, newCode: string, newExpirationDate: Date): Promise<boolean> {
         const resultUpdateConfirmationCode = await UserModelClass
             .updateOne({'accountData.email': email}, {

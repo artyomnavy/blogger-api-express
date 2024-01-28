@@ -5,9 +5,10 @@ import {
     blogSchema,
     commentSchema,
     deviceSessionSchema, likeSchema,
-    postSchema,
+    postSchema, userModelFullType,
     userSchema
 } from "./schemas/schemas";
+import {UserAccountType} from "../types/user/output";
 dotenv.config()
 
 const dbName = 'BloggerPlatform'
@@ -19,7 +20,7 @@ if (!mongoURI) {
 
 export const BlogModelClass = mongoose.model('blogs', blogSchema)
 export const PostModelClass = mongoose.model('posts', postSchema)
-export const UserModelClass = mongoose.model('users', userSchema)
+export const UserModelClass = mongoose.model<UserAccountType, userModelFullType>('users', userSchema)
 export const CommentModelClass = mongoose.model('comments', commentSchema)
 export const DeviceModelClass = mongoose.model('devices', deviceSessionSchema)
 export const AttemptModelClass = mongoose.model('attempts', attemptSchema)

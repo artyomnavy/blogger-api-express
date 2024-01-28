@@ -138,9 +138,9 @@ export class UsersQueryRepository {
             return user
         }
     }
-    async getUserByConfirmationCode(code: string): Promise<WithId<UserAccountType> | null> {
+    async getUserByConfirmationCode(code: string) {
         const user = await UserModelClass
-            .findOne({'emailConfirmation.confirmationCode': code}).lean()
+            .findOne({'emailConfirmation.confirmationCode': code})
 
         if (!user) {
             return null
