@@ -7,5 +7,5 @@ export type OutputAuthMeType = {
 export type AttemptType = {
     ip: string,
     url: string,
-    date: Date
+    date: string
 }

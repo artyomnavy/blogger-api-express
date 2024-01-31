@@ -28,7 +28,7 @@ export class CommentsService {
                 userId: userId,
                 userLogin: userLogin
             },
-            new Date(),
+            new Date().toISOString(),
             postId,
             {
                 likesCount: 0,
@@ -57,7 +57,12 @@ export class CommentsService {
 
         if (currentMyStatus === likesStatuses.none) {
             await this.likesRepository
-                .createLikeStatus(comment.id, userId, likeStatus)
+                .createLikeStatus({
+                    commentIdOrPostId: comment.id,
+                    userId: userId,
+                    status: likeStatus,
+                    addedAt: new Date().toISOString()
+                })
         }
 
         if (likeStatus === likesStatuses.none) {
@@ -66,7 +71,12 @@ export class CommentsService {
         }
 
         await this.likesRepository
-            .updateLikeStatus(comment.id, userId, likeStatus)
+            .updateLikeStatus({
+                commentIdOrPostId: comment.id,
+                userId: userId,
+                status: likeStatus,
+                addedAt: new Date().toISOString()
+            })
 
         if (likeStatus === likesStatuses.none && currentMyStatus === likesStatuses.like) {
             likesCount--

@@ -47,8 +47,8 @@ export class AuthController {
             const payloadRefreshToken = await this.jwtService
                 .getPayloadByToken(refreshToken)
 
-            const iat = new Date(payloadRefreshToken.iat * 1000)
-            const exp = new Date(payloadRefreshToken.exp * 1000)
+            const iat = new Date(payloadRefreshToken.iat * 1000).toISOString()
+            const exp = new Date(payloadRefreshToken.exp * 1000).toISOString()
 
             await this.devicesService
                 .createDeviceSession({iat, exp, ip, deviceId, deviceName, userId})
@@ -113,8 +113,8 @@ export class AuthController {
         const newPayloadRefreshToken = await this.jwtService
             .getPayloadByToken(newRefreshToken)
 
-        const newIat = new Date(newPayloadRefreshToken.iat * 1000)
-        const newExp = new Date(newPayloadRefreshToken.exp * 1000)
+        const newIat = new Date(newPayloadRefreshToken.iat * 1000).toISOString()
+        const newExp = new Date(newPayloadRefreshToken.exp * 1000).toISOString()
 
         const isUpdateDeviceSession = await this.devicesService
             .updateDeviceSession({

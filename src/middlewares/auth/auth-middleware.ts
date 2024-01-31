@@ -99,7 +99,7 @@ export const authRefreshTokenMiddleware = async (req: Request, res: Response, ne
 
     const iatRefreshToken = new Date(payloadToken.iat * 1000)
 
-    if (iatRefreshToken < deviceSession.iat) {
+    if (iatRefreshToken < new Date(deviceSession.iat)) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
         return
     }

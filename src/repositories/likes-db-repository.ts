@@ -1,40 +1,34 @@
-import {Likes} from "../types/comment/output";
 import {LikeModelClass} from "../db/db";
-import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
+import {LikeType} from "../types/like/output";
 
 @injectable()
 export class LikesRepository {
-    async createLikeStatus(
-        commentId: string,
-        userId: string,
-        likeStatus: string): Promise<Likes> {
+    async createLikeStatus(inputData: LikeType): Promise<LikeType> {
 
-        await LikeModelClass.create({
-                commentId: commentId,
-                userId: userId,
-                status: likeStatus})
+        const like = await LikeModelClass.create({
+                commentIdOrPostId: inputData.commentIdOrPostId,
+                userId: inputData.userId,
+                status: inputData.status,
+                addedAt: inputData.addedAt})
 
-        return {
-            commentId: commentId,
-            userId: userId,
-            status: likeStatus
-        }
+        return like
     }
-    async deleteLikeStatus(commentId: string, userId: string): Promise<boolean> {
+    async deleteLikeStatus(commentIdOrPostId: string, userId: string): Promise<boolean> {
         const resultDeleteLikeStatus = await LikeModelClass
-            .deleteOne({commentId: commentId, userId: userId})
+            .deleteOne({commentIdOrPostId: commentIdOrPostId, userId: userId})
         return resultDeleteLikeStatus.deletedCount === 1
     }
-    async updateLikeStatus(commentId: string, userId: string, likeStatus: string): Promise<boolean> {
+    async updateLikeStatus(updateData: LikeType): Promise<boolean> {
         const resultUpdateLikeStatus = await LikeModelClass
             .updateOne({
-                commentId: commentId,
-                userId: userId
+                commentIdOrPostId: updateData.commentIdOrPostId,
+                userId: updateData.userId
             }, {
                 $set: {
-                    status: likeStatus
-                }
+                    status: updateData.status,
+                    addedAt: updateData.addedAt
+                },
             })
         return resultUpdateLikeStatus.matchedCount === 1
     }

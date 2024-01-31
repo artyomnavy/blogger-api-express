@@ -9,7 +9,7 @@ import {inject, injectable} from "inversify";
 export class CommentsQueryRepository {
     constructor(@inject(CommentMapper) protected commentMapper: CommentMapper) {
     }
-    async getCommentById(commentId: string, userId?: string): Promise<OutputCommentType | null> {
+    async getCommentById(commentId: string, userId?: string | null): Promise<OutputCommentType | null> {
         const comment = await CommentModelClass
             .findOne({_id: new ObjectId(commentId)}).lean()
 
@@ -19,7 +19,7 @@ export class CommentsQueryRepository {
             return await this.commentMapper.getMapComment(comment, userId)
         }
     }
-    async getCommentsByPostId(QueryData: PaginatorCommentModel & {postId: string} & {userId?: string}): Promise<PaginatorCommentsType> {
+    async getCommentsByPostId(QueryData: PaginatorCommentModel & {postId: string} & {userId?: string | null}): Promise<PaginatorCommentsType> {
         const pageNumber = QueryData.pageNumber ?
             QueryData.pageNumber :
             1

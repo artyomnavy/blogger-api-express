@@ -21,7 +21,7 @@ export type CommentType = {
         userId: string,
         userLogin: string
     },
-    createdAt: Date,
+    createdAt: string,
     postId: string,
     likesInfo: {
         likesCount: number,
@@ -46,7 +46,7 @@ export class Comment {
             userId: string,
             userLogin: string
         },
-        public createdAt: Date,
+        public createdAt: string,
         public postId: string,
         public likesInfo: {
             likesCount: number,
@@ -55,10 +55,4 @@ export class Comment {
         }
     ) {
     }
-}
-
-export type Likes = {
-    commentId: string,
-    userId: string,
-    status: string
 }

@@ -45,20 +45,6 @@ export class PostsController {
             return
         }
 
-        if (!userId) {
-            const comments = await this.commentsQueryRepository
-                .getCommentsByPostId({
-                    pageNumber,
-                    pageSize,
-                    sortBy,
-                    sortDirection,
-                    postId
-                })
-
-            res.send(comments)
-            return
-        }
-
         const comments = await this.commentsQueryRepository
             .getCommentsByPostId({
                 pageNumber,
@@ -103,13 +89,17 @@ export class PostsController {
             sortDirection
         } = req.query
 
+        const userId = req.userId
+
         const posts = await this.postsQueryRepository
             .getAllPosts({
                 pageNumber,
                 pageSize,
                 sortBy,
-                sortDirection
+                sortDirection,
+                userId
             })
+
         res.send(posts)
     }
     async createPost(req: RequestWithBody<CreateAndUpdatePostModel>, res: Response) {
@@ -131,10 +121,11 @@ export class PostsController {
         res.status(HTTP_STATUSES.CREATED_201).send(newPost)
     }
     async getPost(req: RequestWithParams<Params>, res: Response) {
-        const id = req.params.id
+        const postId = req.params.id
+        const userId = req.userId
 
-        let post = await this.postsQueryRepository
-            .getPostById(id)
+        const post = await this.postsQueryRepository
+            .getPostById(postId, userId)
 
         if (!post) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
@@ -170,6 +161,28 @@ export class PostsController {
 
         if (isUpdated) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        }
+    }
+
+    async changeLikeStatusForPost(req: RequestWithParamsAndBody<Params, {likeStatus: string}>, res: Response) {
+        const userId = req.userId!
+        const postId = req.params.id
+        const likeStatus = req.body.likeStatus
+
+        const post = await this.postsQueryRepository
+            .getPostById(postId)
+
+        if (!post) {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+            return
+        }
+
+        const isUpdated = await this.postsService
+            .changeLikeStatusPostForUser(userId, post, likeStatus)
+
+        if (isUpdated) {
+            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+            return
         }
     }
     async deletePost(req: RequestWithParams<Params>, res: Response) {

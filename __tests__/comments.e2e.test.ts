@@ -157,7 +157,13 @@ describe('/comments', () => {
             content: 'New content 1',
             blogId: expect.any(String),
             blogName: expect.any(String),
-            createdAt: expect.any(String)
+            createdAt: expect.any(String),
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: likesStatuses.none,
+                newestLikes: []
+            }
         })
 
         await request(app)

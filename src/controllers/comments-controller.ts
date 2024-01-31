@@ -63,19 +63,6 @@ export class CommentsController {
         const commentId = req.params.id
         const userId = req.userId
 
-        if (!userId) {
-            const comment = await this.commentsQueryRepository
-                .getCommentById(commentId)
-
-            if (!comment) {
-                res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
-                return
-            } else {
-                res.send(comment)
-                return
-            }
-        }
-
         const comment = await this.commentsQueryRepository
             .getCommentById(commentId, userId)
 

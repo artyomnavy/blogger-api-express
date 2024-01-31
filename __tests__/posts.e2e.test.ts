@@ -2,7 +2,7 @@ import request from 'supertest'
 import {app} from "../src/app"
 import {OutputPostType} from "../src/types/post/output";
 import {OutputBlogType} from "../src/types/blog/output";
-import {HTTP_STATUSES} from "../src/utils";
+import {HTTP_STATUSES, likesStatuses} from "../src/utils";
 import mongoose from "mongoose";
 
 const login = 'admin'
@@ -118,7 +118,13 @@ describe('/posts', () => {
             content: 'New content 1',
             blogId: expect.any(String),
             blogName: expect.any(String),
-            createdAt: expect.any(String)
+            createdAt: expect.any(String),
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: likesStatuses.none,
+                newestLikes: []
+            }
         })
 
         await request(app)

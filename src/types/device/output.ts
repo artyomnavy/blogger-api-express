@@ -1,8 +1,6 @@
-import {ObjectId} from "mongodb";
-
 export type DeviceSessionType = {
-    iat: Date,
-    exp: Date,
+    iat: string,
+    exp: string,
     ip: string,
     deviceId: string,
     deviceName: string,
@@ -18,8 +16,8 @@ export type OutputDeviceSessionType = {
 
 export class DeviceSession {
     constructor(
-        public iat: Date,
-        public exp: Date,
+        public iat: string,
+        public exp: string,
         public ip: string,
         public deviceId: string,
         public deviceName: string,

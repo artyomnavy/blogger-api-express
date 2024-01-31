@@ -56,6 +56,7 @@ export class BlogsController {
     }
     async getPostsForBlog(req: RequestWithParamsAndQuery<Params, PaginatorPostWithBlogIdModel>, res: Response) {
         const blogId = req.params.id
+        const userId = req.userId
 
         let {
             pageNumber,
@@ -79,7 +80,8 @@ export class BlogsController {
                     pageSize,
                     sortBy,
                     sortDirection,
-                    blogId
+                    blogId,
+                    userId
                 }
             )
 

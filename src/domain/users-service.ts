@@ -21,7 +21,7 @@ export class UsersService {
                 login: createData.login,
                 password: passwordHash,
                 email: createData.email,
-                createdAt: new Date()
+                createdAt: new Date().toISOString()
             },
             {
                 confirmationCode: null,

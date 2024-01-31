@@ -2,7 +2,7 @@ import * as mongoose from "mongoose";
 import {BlogType} from "../../types/blog/output";
 import {PostType} from "../../types/post/output";
 import {User, UserAccountType} from "../../types/user/output";
-import {CommentType, Likes} from "../../types/comment/output";
+import {CommentType} from "../../types/comment/output";
 import {DeviceSessionType} from "../../types/device/output";
 import {AttemptType} from "../../types/auth/output";
 import {HydratedDocument, Model} from "mongoose";
@@ -10,13 +10,14 @@ import {UserModelClass} from "../db";
 import {ObjectId} from "mongodb";
 import {v4 as uuidv4} from "uuid";
 import {add} from "date-fns/add";
+import {LikeType} from "../../types/like/output";
 
 // Blog schema
 export const blogSchema = new mongoose.Schema<BlogType>({
     name: {type: String, required: true},
     description: {type: String, required: true},
     websiteUrl: {type: String, required: true},
-    createdAt: {type: Date, required: true},
+    createdAt: {type: String, required: true},
     isMembership: {type: Boolean, required: true}
 })
 
@@ -27,7 +28,17 @@ export const postSchema = new mongoose.Schema<PostType>({
     content: {type: String, required: true},
     blogId: {type: String, required: true},
     blogName: {type: String, required: true},
-    createdAt: {type: Date, required: true}
+    createdAt: {type: String, required: true},
+    extendedLikesInfo: {
+        likesCount: {type: Number, required: true},
+        dislikesCount: {type: Number, required: true},
+        myStatus: {type: String, required: true},
+        newestLikes: [{
+            addedAt: {type: String, required: true},
+            userId: {type: String, required: true},
+            login: {type: String, required: true}
+        }]
+    }
 })
 
 // User schema
@@ -52,11 +63,11 @@ export const userSchema = new mongoose.Schema<
         login: {type: String, required: true},
         password: {type: String, required: true},
         email: {type: String, required: true},
-        createdAt: {type: Date, required: true}
+        createdAt: {type: String, required: true}
     },
     emailConfirmation: {
         confirmationCode: String,
-        expirationDate: Date,
+        expirationDate: String,
         isConfirmed: {type: Boolean, required: true}
     }
 })
@@ -68,13 +79,13 @@ userSchema.static('createUser', function createUser(login: string, email: string
             login: login,
             password: passwordHash,
             email: email,
-            createdAt: new Date()
+            createdAt: new Date().toISOString()
         },
         {
             confirmationCode: uuidv4(),
             expirationDate: add(new Date(), {
                 minutes: 10
-            }),
+            }).toISOString(),
             isConfirmed: false
         }
     ))
@@ -83,7 +94,7 @@ userSchema.static('createUser', function createUser(login: string, email: string
 userSchema.method('canBeConfirmed', function canBeConfirmed(code: string) {
     return this.emailConfirmation.confirmationCode === code &&
         (this.emailConfirmation.expirationDate !== null &&
-            this.emailConfirmation.expirationDate > new Date())
+            new Date(this.emailConfirmation.expirationDate) > new Date())
 })
 
 userSchema.method('confirm', function confirm(code: string) {
@@ -105,7 +116,7 @@ export const commentSchema = new mongoose.Schema<CommentType>({
         userId: {type: String, required: true},
         userLogin: {type: String, required: true}
     },
-    createdAt: {type: Date, required: true},
+    createdAt: {type: String, required: true},
     postId: {type: String, required: true},
     likesInfo: {
         likesCount: {type: Number, required: true},
@@ -116,8 +127,8 @@ export const commentSchema = new mongoose.Schema<CommentType>({
 
 // DeviceSession schema
 export const deviceSessionSchema = new mongoose.Schema<DeviceSessionType>({
-    iat: {type: Date, required: true},
-    exp: {type: Date, required: true},
+    iat: {type: String, required: true},
+    exp: {type: String, required: true},
     ip: {type: String, required: true},
     deviceId: {type: String, required: true},
     deviceName: {type: String, required: true},
@@ -128,12 +139,13 @@ export const deviceSessionSchema = new mongoose.Schema<DeviceSessionType>({
 export const attemptSchema = new mongoose.Schema<AttemptType>({
     ip: {type: String, required: true},
     url: {type: String, required: true},
-    date: {type: Date, required: true}
+    date: {type: String, required: true}
 })
 
 // Like schema
-export const likeSchema = new mongoose.Schema<Likes>({
-    commentId: {type: String, required: true},
+export const likeSchema = new mongoose.Schema<LikeType>({
+    commentIdOrPostId: {type: String, required: true},
     userId: {type: String, required: true},
-    status: {type: String, required: true}
+    status: {type: String, required: true},
+    addedAt: {type: String, required: true}
 })

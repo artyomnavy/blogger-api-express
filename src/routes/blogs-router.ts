@@ -5,6 +5,7 @@ import {objectIdValidation} from "../middlewares/validators/objectId-validator";
 import {postForBlogValidation} from "../middlewares/validators/posts-validator";
 import {container} from "../composition-root";
 import {BlogsController} from "../controllers/blogs-controller";
+import {accessTokenVerification} from "../middlewares/auth/accessToken-verificator";
 
 const blogsController = container.resolve(BlogsController)
 export const blogsRouter = Router({})
@@ -41,4 +42,5 @@ blogsRouter
 
     .get('/:id/posts',
         objectIdValidation,
+        accessTokenVerification,
         blogsController.getPostsForBlog.bind(blogsController))

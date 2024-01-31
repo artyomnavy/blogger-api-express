@@ -19,12 +19,12 @@ export type UserType = {
     login: string,
     password: string,
     email: string,
-    createdAt: Date
+    createdAt: string
 }
 
 export type EmailConfirmationType = {
         confirmationCode: string | null,
-        expirationDate: Date | null,
+        expirationDate: string | null,
         isConfirmed: boolean
 }
 

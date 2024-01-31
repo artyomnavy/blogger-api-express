@@ -94,7 +94,7 @@ const codeValidation = body('code')
 
         if (!user) throw new Error('Invalid code')
         if (user.emailConfirmation.isConfirmed) throw new Error('Code already been applied')
-        if (user.emailConfirmation.expirationDate !== null && user.emailConfirmation.expirationDate < new Date()) throw new Error('Code expired')
+        if (user.emailConfirmation.expirationDate !== null && new Date(user.emailConfirmation.expirationDate) < new Date()) throw new Error('Code expired')
 
         return true
     })
@@ -109,7 +109,7 @@ const recoveryCodeValidation = body('recoveryCode')
             .getUserByConfirmationCode(recoveryCode)
 
         if (!user) throw new Error('Invalid code')
-        if (user.emailConfirmation.expirationDate !== null && user.emailConfirmation.expirationDate < new Date()) throw new Error('Code expired')
+        if (user.emailConfirmation.expirationDate !== null && new Date(user.emailConfirmation.expirationDate) < new Date()) throw new Error('Code expired')
 
         return true
     })

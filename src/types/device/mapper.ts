@@ -5,7 +5,7 @@ export const deviceSessionMapper = (deviceSession: WithId<DeviceSessionType>): O
     return {
         ip: deviceSession.ip,
         title: deviceSession.deviceName,
-        lastActiveDate: deviceSession.iat.toISOString(),
+        lastActiveDate: deviceSession.iat,
         deviceId: deviceSession.deviceId
     }
 }

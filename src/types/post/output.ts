@@ -1,5 +1,11 @@
 import {ObjectId} from "mongodb";
 
+type NewestLikesType = {
+    addedAt: string,
+    userId: string,
+    login: string
+}
+
 export type OutputPostType = {
     id: string,
     title: string,
@@ -7,7 +13,13 @@ export type OutputPostType = {
     content: string,
     blogId: string,
     blogName: string,
-    createdAt: string
+    createdAt: string,
+    extendedLikesInfo: {
+        likesCount: number,
+        dislikesCount: number,
+        myStatus: string,
+        newestLikes: NewestLikesType[]
+    }
 }
 
 export type PostType = {
@@ -16,7 +28,17 @@ export type PostType = {
     content: string,
     blogId: string,
     blogName: string,
-    createdAt: Date
+    createdAt: string,
+    extendedLikesInfo: {
+        likesCount: number,
+        dislikesCount: number,
+        myStatus: string,
+        newestLikes: {
+            addedAt: string,
+            userId: string,
+            login: string
+        }[]
+    }
 }
 
 export type PaginatorPostsType = {
@@ -35,7 +57,17 @@ export class Post {
         public content: string,
         public blogId: string,
         public blogName: string,
-        public createdAt: Date
+        public createdAt: string,
+        public extendedLikesInfo: {
+            likesCount: number,
+            dislikesCount: number,
+            myStatus: string,
+            newestLikes: {
+                addedAt: string,
+                userId: string,
+                login: string
+            }[]
+        }
     ) {
     }
 }

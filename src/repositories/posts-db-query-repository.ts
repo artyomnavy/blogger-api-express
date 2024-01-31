@@ -1,15 +1,17 @@
 import {PostModelClass} from "../db/db";
 import {OutputPostType, PaginatorPostsType} from "../types/post/output";
-import {postMapper} from "../types/post/mapper";
+import {PostMapper} from "../types/post/mapper";
 import {ObjectId} from "mongodb";
 import {PaginatorPostModel} from "../types/post/input";
 import {PaginatorPostWithBlogIdModel} from "../types/blog/input";
 import {PaginatorPostsWithBlogIdType} from "../types/blog/output";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 
 @injectable()
 export class PostsQueryRepository {
-    async getAllPosts(QueryData: PaginatorPostModel): Promise<PaginatorPostsType> {
+    constructor(@inject(PostMapper) protected postMapper: PostMapper) {
+    }
+    async getAllPosts(QueryData: PaginatorPostModel & {userId?: string | null}): Promise<PaginatorPostsType> {
         const pageNumber = QueryData.pageNumber ?
             QueryData.pageNumber :
             1
@@ -22,6 +24,8 @@ export class PostsQueryRepository {
         const sortDirection = QueryData.sortDirection ?
             QueryData.sortDirection :
             'desc'
+
+        const userId = QueryData.userId
 
         const posts = await PostModelClass
             .find({})
@@ -38,20 +42,20 @@ export class PostsQueryRepository {
             page: +pageNumber,
             pageSize: +pageSize,
             totalCount: +totalCount,
-            items: posts.map(postMapper)
+            items: await Promise.all(posts.map(post => this.postMapper.getMapPost(post, userId)))
         }
     }
-    async getPostById(id: string): Promise<OutputPostType | null> {
+    async getPostById(postId: string, userId?: string | null): Promise<OutputPostType | null> {
         const post = await PostModelClass
-            .findOne({_id: new ObjectId(id)}).lean()
+            .findOne({_id: new ObjectId(postId)}).lean()
 
         if (!post) {
             return null
         } else {
-            return postMapper(post)
+            return await this.postMapper.getMapPost(post, userId)
         }
     }
-    async getPostsByBlogId(QueryData: PaginatorPostWithBlogIdModel & { blogId: string } ): Promise<PaginatorPostsWithBlogIdType> {
+    async getPostsByBlogId(QueryData: PaginatorPostWithBlogIdModel & {blogId: string} & {userId?: string | null} ): Promise<PaginatorPostsWithBlogIdType> {
         const pageNumber = QueryData.pageNumber ?
             QueryData.pageNumber :
             1
@@ -65,6 +69,7 @@ export class PostsQueryRepository {
             QueryData.sortDirection :
             'desc'
         const blogId = QueryData.blogId
+        const userId = QueryData.userId
 
         let filter = {
             blogId: {
@@ -87,7 +92,20 @@ export class PostsQueryRepository {
             page: +pageNumber,
             pageSize: +pageSize,
             totalCount: +totalCount,
-            items: posts.map(postMapper)
+            items: await Promise.all(posts.map(post => this.postMapper.getMapPost(post, userId)))
+        }
+    }
+    async checkUserNewestLikeForPost(postId: string, userId: string): Promise<boolean> {
+        const post = await PostModelClass
+            .findOne({
+                _id: new ObjectId(postId),
+                'extendedLikesInfo.newestLikes.userId': userId
+            }).lean()
+
+        if (!post) {
+            return false
+        } else {
+            return true
         }
     }
 }

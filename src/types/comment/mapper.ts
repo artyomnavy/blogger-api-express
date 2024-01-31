@@ -8,13 +8,14 @@ import {inject, injectable} from "inversify";
 export class CommentMapper {
     constructor(@inject(LikesQueryRepository) protected likesQueryRepository: LikesQueryRepository) {
     }
-    async getMapComment(comment: WithId<CommentType>, userId?: string) {
-        let likeStatus = null;
+    async getMapComment(comment: WithId<CommentType>, userId?: string | null) {
+        let likeStatus = null
 
         if (userId) {
-            likeStatus = await this.likesQueryRepository.getLikeStatusCommentForUser(
+            const like = await this.likesQueryRepository.getLikeCommentOrPostForUser(
                 comment._id.toString(), userId
-            );
+            )
+            likeStatus = like?.status
         }
 
         return {
@@ -24,13 +25,13 @@ export class CommentMapper {
                 userId: comment.commentatorInfo.userId,
                 userLogin: comment.commentatorInfo.userLogin
             },
-            createdAt: comment.createdAt.toISOString(),
+            createdAt: comment.createdAt,
             likesInfo: {
                 likesCount: comment.likesInfo.likesCount,
                 dislikesCount: comment.likesInfo.dislikesCount,
                 myStatus: likeStatus || likesStatuses.none
             }
-        };
+        }
 
     }
 }

@@ -17,7 +17,7 @@ export const attemptsMiddleware = async (req: Request, res: Response, next: Next
     const url = req.originalUrl
 
     const amount = await authQueryRepository
-        .getAmountOfAttempts({ip, url, date: limitDate})
+        .getAmountOfAttempts({ip, url, date: limitDate.toISOString()})
 
     if (amount >= 5) {
         res.sendStatus(HTTP_STATUSES.TOO_MANY_REQUESTS_429)
@@ -27,7 +27,7 @@ export const attemptsMiddleware = async (req: Request, res: Response, next: Next
     const attempt: AttemptType = {
         ip: ip,
         url: url,
-        date: new Date()
+        date: new Date().toISOString()
     }
 
     await authService

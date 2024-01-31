@@ -28,7 +28,7 @@ export class UsersRepository {
     //         })
     //     return resultUpdateConfirmStatus.modifiedCount === 1
     // }
-    async updateConfirmationCode(email: string, newCode: string, newExpirationDate: Date): Promise<boolean> {
+    async updateConfirmationCode(email: string, newCode: string, newExpirationDate: string): Promise<boolean> {
         const resultUpdateConfirmationCode = await UserModelClass
             .updateOne({'accountData.email': email}, {
                 $set: {
