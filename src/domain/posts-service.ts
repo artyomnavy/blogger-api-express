@@ -115,9 +115,7 @@ export class PostsService {
                 if (amountNewestLikes < 3) {
                     await this.postsRepository
                         .addNewestLikeForPost(post.id, newAddedAt!, userId, login)
-                }
-
-                if (oldAddedAt) {
+                } else if (oldAddedAt) {
                     await this.postsRepository
                         .replaceNewestLikeForPost(post.id, oldAddedAt, newAddedAt!, userId, login)
                 }
@@ -140,9 +138,7 @@ export class PostsService {
                 if (amountNewestLikes < 3) {
                     await this.postsRepository
                         .addNewestLikeForPost(post.id, newAddedAt!, userId, login)
-                }
-
-                if (oldAddedAt) {
+                } else if (oldAddedAt) {
                     await this.postsRepository
                         .replaceNewestLikeForPost(post.id, oldAddedAt, newAddedAt!, userId, login)
                 }
