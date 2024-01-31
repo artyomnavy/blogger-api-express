@@ -117,7 +117,10 @@ export class PostsService {
                         .addNewestLikeForPost(post.id, newAddedAt!, userId, login)
                 } else if (oldAddedAt) {
                     await this.postsRepository
-                        .replaceNewestLikeForPost(post.id, oldAddedAt, newAddedAt!, userId, login)
+                        .removeNewestLikeForPost(post.id, undefined,  oldAddedAt)
+
+                    await this.postsRepository
+                        .addNewestLikeForPost(post.id, newAddedAt!, userId, login)
                 }
             }
         }
@@ -140,7 +143,10 @@ export class PostsService {
                         .addNewestLikeForPost(post.id, newAddedAt!, userId, login)
                 } else if (oldAddedAt) {
                     await this.postsRepository
-                        .replaceNewestLikeForPost(post.id, oldAddedAt, newAddedAt!, userId, login)
+                        .removeNewestLikeForPost(post.id, undefined,  oldAddedAt)
+
+                    await this.postsRepository
+                        .addNewestLikeForPost(post.id, newAddedAt!, userId, login)
                 }
             }
         }
