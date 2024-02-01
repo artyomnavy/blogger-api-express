@@ -19,6 +19,9 @@ export class PostMapper {
             likeStatus = like?.status
         }
 
+        const newestLikes = await this.likesQueryRepository
+            .getNewestLikesForPost(post._id.toString())
+
         return {
             id: post._id.toString(),
             title: post.title,
@@ -31,14 +34,7 @@ export class PostMapper {
                 likesCount: post.extendedLikesInfo.likesCount,
                 dislikesCount: post.extendedLikesInfo.dislikesCount,
                 myStatus: likeStatus || likesStatuses.none,
-                newestLikes: post.extendedLikesInfo.newestLikes
-                    .map(item => {
-                        return {
-                            addedAt: item.addedAt,
-                            userId: item.userId,
-                            login: item.login
-                        }
-                    })
+                newestLikes: newestLikes
             }
         }
     }

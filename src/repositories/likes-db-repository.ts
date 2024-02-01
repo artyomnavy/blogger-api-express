@@ -1,10 +1,11 @@
 import {LikeModelClass} from "../db/db";
 import {injectable} from "inversify";
 import {LikeType} from "../types/like/output";
+import {WithId} from "mongodb";
 
 @injectable()
 export class LikesRepository {
-    async createLikeStatus(inputData: LikeType): Promise<LikeType> {
+    async createLike(inputData: LikeType): Promise<WithId<LikeType>> {
 
         const like = await LikeModelClass.create({
                 commentIdOrPostId: inputData.commentIdOrPostId,
@@ -14,12 +15,12 @@ export class LikesRepository {
 
         return like
     }
-    async deleteLikeStatus(commentIdOrPostId: string, userId: string): Promise<boolean> {
+    async deleteLike(commentIdOrPostId: string, userId: string): Promise<boolean> {
         const resultDeleteLikeStatus = await LikeModelClass
             .deleteOne({commentIdOrPostId: commentIdOrPostId, userId: userId})
         return resultDeleteLikeStatus.deletedCount === 1
     }
-    async updateLikeStatus(updateData: LikeType): Promise<boolean> {
+    async updateLike(updateData: LikeType): Promise<boolean> {
         const resultUpdateLikeStatus = await LikeModelClass
             .updateOne({
                 commentIdOrPostId: updateData.commentIdOrPostId,

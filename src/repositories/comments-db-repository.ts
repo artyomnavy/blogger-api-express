@@ -30,7 +30,6 @@ export class CommentsRepository {
     }
     async changeLikeStatusCommentForUser(
         commentId: string,
-        likeStatus: string,
         likesCount: number,
         dislikesCount: number): Promise<boolean> {
 
@@ -41,7 +40,6 @@ export class CommentsRepository {
                 $set: {
                     'likesInfo.likesCount': likesCount,
                     'likesInfo.dislikesCount': dislikesCount,
-                    'likesInfo.myStatus': likeStatus
                 }
             })
         return resultUpdateLikeStatus.matchedCount === 1

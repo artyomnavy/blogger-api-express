@@ -170,7 +170,7 @@ export class PostsController {
         const likeStatus = req.body.likeStatus
 
         const post = await this.postsQueryRepository
-            .getPostById(postId)
+            .getPostById(postId, userId)
 
         if (!post) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)

@@ -28,7 +28,6 @@ export class PostsRepository {
     }
     async changeLikeStatusPostForUser(
         postId: string,
-        likeStatus: string,
         likesCount: number,
         dislikesCount: number): Promise<boolean> {
 
@@ -39,7 +38,6 @@ export class PostsRepository {
                 $set: {
                     'extendedLikesInfo.likesCount': likesCount,
                     'extendedLikesInfo.dislikesCount': dislikesCount,
-                    'extendedLikesInfo.myStatus': likeStatus
                 }
             })
         return resultUpdateLikeStatus.matchedCount === 1
@@ -48,49 +46,5 @@ export class PostsRepository {
         const resultDeletePost = await PostModelClass
             .deleteOne({_id: new ObjectId(id)})
         return resultDeletePost.deletedCount === 1
-    }
-    async addNewestLikeForPost(postId: string, addedAt: string, userId: string, login: string): Promise<boolean> {
-        const resultUpdatePost = await PostModelClass
-            .updateOne({_id: new ObjectId(postId)},
-                {
-                    $push: {'extendedLikesInfo.newestLikes': {
-                            addedAt: addedAt,
-                            userId: userId,
-                            login: login
-                        }
-                    }
-                })
-
-        return resultUpdatePost.matchedCount === 1
-    }
-    async replaceNewestLikeForPost(postId: string, oldAddedAt: string, newAddedAt: string, userId: string, login: string): Promise<boolean> {
-        const resultUpdatePost = await PostModelClass
-            .updateOne({
-                    _id: new ObjectId(postId),
-                    'extendedLikesInfo.newestLikes.addedAt': oldAddedAt
-                },
-                {
-                    $set: {'extendedLikesInfo.newestLikes.$': {
-                            addedAt: newAddedAt,
-                            userId: userId,
-                            login: login
-                        }
-                    }
-                })
-
-        return resultUpdatePost.matchedCount === 1
-    }
-    async removeNewestLikeForPost(postId: string, userId?: string, oldAddedAt?: string): Promise<boolean> {
-        const resultUpdatePost = await PostModelClass
-            .updateOne({_id: new ObjectId(postId)},
-                {
-                    $pull: {$or:[
-                        {'extendedLikesInfo.newestLikes.userId': userId},
-                        {'extendedLikesInfo.newestLikes.addedAt': oldAddedAt}
-                        ]
-                    }
-                })
-
-        return resultUpdatePost.matchedCount === 1
     }
 }

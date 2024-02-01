@@ -51,78 +51,35 @@ export class PostsService {
         const currentMyStatus = post.extendedLikesInfo.myStatus
         let likesCount = post.extendedLikesInfo.likesCount
         let dislikesCount = post.extendedLikesInfo.dislikesCount
-        const newestLikes = post.extendedLikesInfo.newestLikes
-        const amountNewestLikes = post.extendedLikesInfo.newestLikes.length
-
-        const addedAts = newestLikes.map(like => like.addedAt)
-            .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-
-        const oldAddedAt = addedAts[0]
-
-        const user = await this.usersQueryRepository
-            .getUserById(userId)
-
-        const login = user!.login
-
-        const isUserNewestLike = await this.postsQueryRepository
-            .checkUserNewestLikeForPost(post.id, userId)
 
         if (likeStatus === currentMyStatus) {
             return true
         }
 
+        const newLike = {
+            commentIdOrPostId: post.id,
+            userId: userId,
+            status: likeStatus,
+            addedAt: new Date().toISOString()
+        }
+
         if (currentMyStatus === likesStatuses.none) {
             await this.likesRepository
-                .createLikeStatus({
-                    commentIdOrPostId: post.id,
-                    userId: userId,
-                    status: likeStatus,
-                    addedAt: new Date().toISOString()
-                })
-        }
-
-        if (likeStatus === likesStatuses.none) {
+                .createLike(newLike)
+        } else if (likeStatus === likesStatuses.none) {
             await this.likesRepository
-                .deleteLikeStatus(post.id, userId)
+                .deleteLike(post.id, userId)
+        } else {
+            await this.likesRepository
+                .updateLike(newLike)
         }
-
-        await this.likesRepository
-            .updateLikeStatus({
-                commentIdOrPostId: post.id,
-                userId: userId,
-                status: likeStatus,
-                addedAt: new Date().toISOString()
-            })
-
-        const like = await this.likesQueryRepository
-            .getLikeCommentOrPostForUser(post.id, userId)
-
-        const newAddedAt = like?.addedAt
 
         if (likeStatus === likesStatuses.none && currentMyStatus === likesStatuses.like) {
             likesCount--
-
-            if (isUserNewestLike) {
-                await this.postsRepository
-                    .removeNewestLikeForPost(post.id, userId)
-            }
         }
 
         if (likeStatus === likesStatuses.like && currentMyStatus === likesStatuses.none) {
             likesCount++
-
-            if (!isUserNewestLike) {
-                if (amountNewestLikes < 3) {
-                    await this.postsRepository
-                        .addNewestLikeForPost(post.id, newAddedAt!, userId, login)
-                } else if (oldAddedAt) {
-                    await this.postsRepository
-                        .addNewestLikeForPost(post.id, newAddedAt!, userId, login)
-
-                    await this.postsRepository
-                        .removeNewestLikeForPost(post.id, undefined,  oldAddedAt)
-                }
-            }
         }
 
         if (likeStatus === likesStatuses.none && currentMyStatus === likesStatuses.dislike) {
@@ -136,33 +93,15 @@ export class PostsService {
         if (likeStatus === likesStatuses.like && currentMyStatus === likesStatuses.dislike) {
             likesCount++
             dislikesCount--
-
-            if (!isUserNewestLike) {
-                if (amountNewestLikes < 3) {
-                    await this.postsRepository
-                        .addNewestLikeForPost(post.id, newAddedAt!, userId, login)
-                } else if (oldAddedAt) {
-                    await this.postsRepository
-                        .addNewestLikeForPost(post.id, newAddedAt!, userId, login)
-
-                    await this.postsRepository
-                        .removeNewestLikeForPost(post.id, undefined,  oldAddedAt)
-                }
-            }
         }
 
         if (likeStatus === likesStatuses.dislike && currentMyStatus === likesStatuses.like) {
             likesCount--
             dislikesCount++
-
-            if (isUserNewestLike) {
-                await this.postsRepository
-                    .removeNewestLikeForPost(post.id, userId)
-            }
         }
 
         return await this.postsRepository
-            .changeLikeStatusPostForUser(post.id, likeStatus, likesCount, dislikesCount)
+            .changeLikeStatusPostForUser(post.id, likesCount, dislikesCount)
     }
     async deletePost(id: string): Promise<boolean> {
         return this.postsRepository

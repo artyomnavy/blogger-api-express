@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 
-type NewestLikesType = {
+export type NewestLikesType = {
     addedAt: string,
     userId: string,
     login: string

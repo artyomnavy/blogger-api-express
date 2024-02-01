@@ -55,28 +55,23 @@ export class CommentsService {
             return true
         }
 
+        const newLike = {
+            commentIdOrPostId: comment.id,
+            userId: userId,
+            status: likeStatus,
+            addedAt: new Date().toISOString()
+        }
+
         if (currentMyStatus === likesStatuses.none) {
             await this.likesRepository
-                .createLikeStatus({
-                    commentIdOrPostId: comment.id,
-                    userId: userId,
-                    status: likeStatus,
-                    addedAt: new Date().toISOString()
-                })
-        }
-
-        if (likeStatus === likesStatuses.none) {
+                .createLike(newLike)
+        } else if (likeStatus === likesStatuses.none) {
             await this.likesRepository
-                .deleteLikeStatus(comment.id, userId)
+                .deleteLike(comment.id, userId)
+        } else {
+            await this.likesRepository
+                .updateLike(newLike)
         }
-
-        await this.likesRepository
-            .updateLikeStatus({
-                commentIdOrPostId: comment.id,
-                userId: userId,
-                status: likeStatus,
-                addedAt: new Date().toISOString()
-            })
 
         if (likeStatus === likesStatuses.none && currentMyStatus === likesStatuses.like) {
             likesCount--
@@ -105,6 +100,6 @@ export class CommentsService {
         }
 
         return await this.commentsRepository
-            .changeLikeStatusCommentForUser(comment.id, likeStatus, likesCount, dislikesCount)
+            .changeLikeStatusCommentForUser(comment.id, likesCount, dislikesCount)
     }
 }

@@ -12,7 +12,7 @@ import {ObjectId} from "mongodb";
 const login = 'admin'
 const password = 'qwerty'
 
-describe('/comments', () => {
+describe('/likes', () => {
     const dbName = 'Tests'
     const mongoURI = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017'
 
@@ -197,242 +197,242 @@ describe('/comments', () => {
     })
 
     // CREATE COMMENT FOR POST
-    // it('+ POST create comment for post with correct token and data', async() => {
-    //     const createComment = await request(app)
-    //         .post(`/posts/${newPost!.id}/comments`)
-    //         .set('Authorization', `Bearer ${token1}`)
-    //         .send({content: 'new content for post user\'s'})
-    //         .expect(HTTP_STATUSES.CREATED_201)
-    //
-    //     newComment = createComment.body
-    //
-    //     expect(newComment).toEqual({
-    //         id: expect.any(String),
-    //         content: 'new content for post user\'s',
-    //         commentatorInfo: {
-    //             userId: `${newUser1!.id}`,
-    //             userLogin: `${newUser1!.login}`
-    //         },
-    //         createdAt: expect.any(String),
-    //         likesInfo: {
-    //             likesCount: 0,
-    //             dislikesCount: 0,
-    //             myStatus: likesStatuses.none
-    //         }
-    //     })
-    //
-    //     await request(app)
-    //         .get(`/posts/${newPost!.id}/comments`)
-    //         .expect(HTTP_STATUSES.OK_200, {
-    //             pagesCount: 1,
-    //             page: 1,
-    //             pageSize: 10,
-    //             totalCount: 1,
-    //             items: [newComment]
-    //         })
-    // })
+    it('+ POST create comment for post with correct token and data', async() => {
+        const createComment = await request(app)
+            .post(`/posts/${newPost!.id}/comments`)
+            .set('Authorization', `Bearer ${token1}`)
+            .send({content: 'new content for post user\'s'})
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        newComment = createComment.body
+
+        expect(newComment).toEqual({
+            id: expect.any(String),
+            content: 'new content for post user\'s',
+            commentatorInfo: {
+                userId: `${newUser1!.id}`,
+                userLogin: `${newUser1!.login}`
+            },
+            createdAt: expect.any(String),
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: likesStatuses.none
+            }
+        })
+
+        await request(app)
+            .get(`/posts/${newPost!.id}/comments`)
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [newComment]
+            })
+    })
 
     // CHECK PUT LIKES COMMENTS
-    // it('- PUT change like status comment for user with incorrect status', async() => {
-    //     await request(app)
-    //         .put(`/comments/${newComment!.id}/like-status`)
-    //         .set('Authorization', `Bearer ${token1}`)
-    //         .send({
-    //             likeStatus: 'badStatus'
-    //         })
-    //         .expect(HTTP_STATUSES.BAD_REQUEST_400)
-    // })
-    //
-    // it('+ PUT change like status comment for user with correct data', async() => {
-    //     await request(app)
-    //         .put(`/comments/${newComment!.id}/like-status`)
-    //         .set('Authorization', `Bearer ${token1}`)
-    //         .send({
-    //             likeStatus: likesStatuses.none
-    //         })
-    //         .expect(HTTP_STATUSES.NO_CONTENT_204)
-    //
-    //     await request(app)
-    //         .get(`/comments/${newComment!.id}`)
-    //         .set('Authorization', `Bearer ${token1}`)
-    //         .expect(HTTP_STATUSES.OK_200, {
-    //             ...newComment,
-    //             commentatorInfo: {...newComment!.commentatorInfo},
-    //             likesInfo: {
-    //                 ...newComment!.likesInfo,
-    //                 myStatus: likesStatuses.none
-    //             }
-    //         })
-    //
-    //     await request(app)
-    //         .put(`/comments/${newComment!.id}/like-status`)
-    //         .set('Authorization', `Bearer ${token1}`)
-    //         .send({
-    //             likeStatus: likesStatuses.like
-    //         })
-    //         .expect(HTTP_STATUSES.NO_CONTENT_204)
-    //
-    //     await request(app)
-    //         .get(`/comments/${newComment!.id}`)
-    //         .set('Authorization', `Bearer ${token1}`)
-    //         .expect(HTTP_STATUSES.OK_200, {
-    //             ...newComment,
-    //             commentatorInfo: {...newComment!.commentatorInfo},
-    //             likesInfo: {
-    //                 ...newComment!.likesInfo,
-    //                 likesCount: 1,
-    //                 myStatus: likesStatuses.like
-    //             }
-    //         })
-    //
-    //     await request(app)
-    //         .put(`/comments/${newComment!.id}/like-status`)
-    //         .set('Authorization', `Bearer ${token1}`)
-    //         .send({
-    //             likeStatus: likesStatuses.dislike
-    //         })
-    //         .expect(HTTP_STATUSES.NO_CONTENT_204)
-    //
-    //     await request(app)
-    //         .get(`/comments/${newComment!.id}`)
-    //         .set('Authorization', `Bearer ${token1}`)
-    //         .expect(HTTP_STATUSES.OK_200, {
-    //             ...newComment,
-    //             commentatorInfo: {...newComment!.commentatorInfo},
-    //             likesInfo: {
-    //                 ...newComment!.likesInfo,
-    //                 likesCount: 0,
-    //                 dislikesCount: 1,
-    //                 myStatus: likesStatuses.dislike
-    //             }
-    //         })
-    //
-    //     await request(app)
-    //         .put(`/comments/${newComment!.id}/like-status`)
-    //         .set('Authorization', `Bearer ${token1}`)
-    //         .send({
-    //             likeStatus: likesStatuses.dislike
-    //         })
-    //         .expect(HTTP_STATUSES.NO_CONTENT_204)
-    //
-    //     await request(app)
-    //         .get(`/comments/${newComment!.id}`)
-    //         .set('Authorization', `Bearer ${token1}`)
-    //         .expect(HTTP_STATUSES.OK_200, {
-    //             ...newComment,
-    //             commentatorInfo: {...newComment!.commentatorInfo},
-    //             likesInfo: {
-    //                 ...newComment!.likesInfo,
-    //                 likesCount: 0,
-    //                 dislikesCount: 1,
-    //                 myStatus: likesStatuses.dislike
-    //             }
-    //         })
-    // })
-    //
-    // it('+ PUT change like status comment for other user with correct data', async() => {
-    //     await request(app)
-    //         .put(`/comments/${newComment!.id}/like-status`)
-    //         .set('Authorization', `Bearer ${token2}`)
-    //         .send({
-    //             likeStatus: likesStatuses.none
-    //         })
-    //         .expect(HTTP_STATUSES.NO_CONTENT_204)
-    //
-    //     await request(app)
-    //         .get(`/comments/${newComment!.id}`)
-    //         .set('Authorization', `Bearer ${token2}`)
-    //         .expect(HTTP_STATUSES.OK_200, {
-    //             ...newComment,
-    //             commentatorInfo: {...newComment!.commentatorInfo},
-    //             likesInfo: {
-    //                 ...newComment!.likesInfo,
-    //                 likesCount: 0,
-    //                 dislikesCount: 1,
-    //                 myStatus: likesStatuses.none
-    //             }
-    //         })
-    //
-    //     await request(app)
-    //         .put(`/comments/${newComment!.id}/like-status`)
-    //         .set('Authorization', `Bearer ${token2}`)
-    //         .send({
-    //             likeStatus: likesStatuses.like
-    //         })
-    //         .expect(HTTP_STATUSES.NO_CONTENT_204)
-    //
-    //     await request(app)
-    //         .get(`/comments/${newComment!.id}`)
-    //         .set('Authorization', `Bearer ${token2}`)
-    //         .expect(HTTP_STATUSES.OK_200, {
-    //             ...newComment,
-    //             commentatorInfo: {...newComment!.commentatorInfo},
-    //             likesInfo: {
-    //                 ...newComment!.likesInfo,
-    //                 likesCount: 1,
-    //                 dislikesCount: 1,
-    //                 myStatus: likesStatuses.like
-    //             }
-    //         })
-    //
-    //     await request(app)
-    //         .put(`/comments/${newComment!.id}/like-status`)
-    //         .set('Authorization', `Bearer ${token2}`)
-    //         .send({
-    //             likeStatus: likesStatuses.dislike
-    //         })
-    //         .expect(HTTP_STATUSES.NO_CONTENT_204)
-    //
-    //     await request(app)
-    //         .get(`/comments/${newComment!.id}`)
-    //         .set('Authorization', `Bearer ${token2}`)
-    //         .expect(HTTP_STATUSES.OK_200, {
-    //             ...newComment,
-    //             commentatorInfo: {...newComment!.commentatorInfo},
-    //             likesInfo: {
-    //                 ...newComment!.likesInfo,
-    //                 dislikesCount: 2,
-    //                 myStatus: likesStatuses.dislike
-    //             }
-    //         })
-    // })
-    //
-    // // GET COMMENTS VISITOR
-    // it('+ GET comment for visitor with correct data', async() => {
-    //     await request(app)
-    //         .get(`/comments/${newComment!.id}`)
-    //         .expect(HTTP_STATUSES.OK_200, {
-    //             ...newComment,
-    //             commentatorInfo: {...newComment!.commentatorInfo},
-    //             likesInfo: {
-    //                 ...newComment!.likesInfo,
-    //                 likesCount: 0,
-    //                 dislikesCount: 2,
-    //                 myStatus: likesStatuses.none
-    //             }
-    //         })
-    // })
-    //
-    // it('+ GET all comments post\'s for visitor with correct data', async() => {
-    //     await request(app)
-    //         .get(`/posts/${newPost!.id}/comments`)
-    //         .expect(HTTP_STATUSES.OK_200, {
-    //             pagesCount: 1,
-    //             page: 1,
-    //             pageSize: 10,
-    //             totalCount: 1,
-    //             items: [{
-    //                 ...newComment,
-    //                 commentatorInfo: {...newComment!.commentatorInfo},
-    //                 likesInfo: {
-    //                     ...newComment!.likesInfo,
-    //                     likesCount: 0,
-    //                     dislikesCount: 2,
-    //                     myStatus: likesStatuses.none
-    //                 }
-    //             }]
-    //         })
-    // })
+    it('- PUT change like status comment for user with incorrect status', async() => {
+        await request(app)
+            .put(`/comments/${newComment!.id}/like-status`)
+            .set('Authorization', `Bearer ${token1}`)
+            .send({
+                likeStatus: 'badStatus'
+            })
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+    })
+
+    it('+ PUT change like status comment for user with correct data', async() => {
+        await request(app)
+            .put(`/comments/${newComment!.id}/like-status`)
+            .set('Authorization', `Bearer ${token1}`)
+            .send({
+                likeStatus: likesStatuses.none
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        await request(app)
+            .get(`/comments/${newComment!.id}`)
+            .set('Authorization', `Bearer ${token1}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                ...newComment,
+                commentatorInfo: {...newComment!.commentatorInfo},
+                likesInfo: {
+                    ...newComment!.likesInfo,
+                    myStatus: likesStatuses.none
+                }
+            })
+
+        await request(app)
+            .put(`/comments/${newComment!.id}/like-status`)
+            .set('Authorization', `Bearer ${token1}`)
+            .send({
+                likeStatus: likesStatuses.like
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        await request(app)
+            .get(`/comments/${newComment!.id}`)
+            .set('Authorization', `Bearer ${token1}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                ...newComment,
+                commentatorInfo: {...newComment!.commentatorInfo},
+                likesInfo: {
+                    ...newComment!.likesInfo,
+                    likesCount: 1,
+                    myStatus: likesStatuses.like
+                }
+            })
+
+        await request(app)
+            .put(`/comments/${newComment!.id}/like-status`)
+            .set('Authorization', `Bearer ${token1}`)
+            .send({
+                likeStatus: likesStatuses.dislike
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        await request(app)
+            .get(`/comments/${newComment!.id}`)
+            .set('Authorization', `Bearer ${token1}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                ...newComment,
+                commentatorInfo: {...newComment!.commentatorInfo},
+                likesInfo: {
+                    ...newComment!.likesInfo,
+                    likesCount: 0,
+                    dislikesCount: 1,
+                    myStatus: likesStatuses.dislike
+                }
+            })
+
+        await request(app)
+            .put(`/comments/${newComment!.id}/like-status`)
+            .set('Authorization', `Bearer ${token1}`)
+            .send({
+                likeStatus: likesStatuses.dislike
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        await request(app)
+            .get(`/comments/${newComment!.id}`)
+            .set('Authorization', `Bearer ${token1}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                ...newComment,
+                commentatorInfo: {...newComment!.commentatorInfo},
+                likesInfo: {
+                    ...newComment!.likesInfo,
+                    likesCount: 0,
+                    dislikesCount: 1,
+                    myStatus: likesStatuses.dislike
+                }
+            })
+    })
+
+    it('+ PUT change like status comment for other user with correct data', async() => {
+        await request(app)
+            .put(`/comments/${newComment!.id}/like-status`)
+            .set('Authorization', `Bearer ${token2}`)
+            .send({
+                likeStatus: likesStatuses.none
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        await request(app)
+            .get(`/comments/${newComment!.id}`)
+            .set('Authorization', `Bearer ${token2}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                ...newComment,
+                commentatorInfo: {...newComment!.commentatorInfo},
+                likesInfo: {
+                    ...newComment!.likesInfo,
+                    likesCount: 0,
+                    dislikesCount: 1,
+                    myStatus: likesStatuses.none
+                }
+            })
+
+        await request(app)
+            .put(`/comments/${newComment!.id}/like-status`)
+            .set('Authorization', `Bearer ${token2}`)
+            .send({
+                likeStatus: likesStatuses.like
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        await request(app)
+            .get(`/comments/${newComment!.id}`)
+            .set('Authorization', `Bearer ${token2}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                ...newComment,
+                commentatorInfo: {...newComment!.commentatorInfo},
+                likesInfo: {
+                    ...newComment!.likesInfo,
+                    likesCount: 1,
+                    dislikesCount: 1,
+                    myStatus: likesStatuses.like
+                }
+            })
+
+        await request(app)
+            .put(`/comments/${newComment!.id}/like-status`)
+            .set('Authorization', `Bearer ${token2}`)
+            .send({
+                likeStatus: likesStatuses.dislike
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        await request(app)
+            .get(`/comments/${newComment!.id}`)
+            .set('Authorization', `Bearer ${token2}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                ...newComment,
+                commentatorInfo: {...newComment!.commentatorInfo},
+                likesInfo: {
+                    ...newComment!.likesInfo,
+                    dislikesCount: 2,
+                    myStatus: likesStatuses.dislike
+                }
+            })
+    })
+
+    // GET COMMENTS VISITOR
+    it('+ GET comment for visitor with correct data', async() => {
+        await request(app)
+            .get(`/comments/${newComment!.id}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                ...newComment,
+                commentatorInfo: {...newComment!.commentatorInfo},
+                likesInfo: {
+                    ...newComment!.likesInfo,
+                    likesCount: 0,
+                    dislikesCount: 2,
+                    myStatus: likesStatuses.none
+                }
+            })
+    })
+
+    it('+ GET all comments post\'s for visitor with correct data', async() => {
+        await request(app)
+            .get(`/posts/${newPost!.id}/comments`)
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [{
+                    ...newComment,
+                    commentatorInfo: {...newComment!.commentatorInfo},
+                    likesInfo: {
+                        ...newComment!.likesInfo,
+                        likesCount: 0,
+                        dislikesCount: 2,
+                        myStatus: likesStatuses.none
+                    }
+                }]
+            })
+    })
 
     // CHECK PUT LIKES POSTS
     it('+ PUT change like status post for user with correct data', async() => {
@@ -463,33 +463,29 @@ describe('/comments', () => {
             })
             .expect(HTTP_STATUSES.NO_CONTENT_204)
 
-        const post = await PostModelClass
-            .findOne({_id: new ObjectId(newPost!.id)}).lean()
-
-        console.log(post!.extendedLikesInfo.newestLikes)
-
-        await request(app)
+        const response1 = await request(app)
             .get(`/posts/${newPost!.id}`)
             .set('Authorization', `Bearer ${token1}`)
-            .expect(HTTP_STATUSES.OK_200, {
-                id: newPost!.id,
-                title: newPost!.title,
-                shortDescription: newPost!.shortDescription,
-                content: newPost!.content,
-                blogId: newBlog!.id,
-                blogName: newBlog!.name,
-                createdAt: newPost!.createdAt,
-                extendedLikesInfo: {
-                    likesCount: 1,
-                    dislikesCount: 0,
-                    myStatus: likesStatuses.like,
-                    newestLikes: [{
-                        addedAt: expect.any(String),
-                        userId: newUser1!.id,
-                        login: newUser1!.login
-                    }]
-                }
-            })
+
+        expect(response1.body).toStrictEqual({
+            id: newPost!.id,
+            title: newPost!.title,
+            shortDescription: newPost!.shortDescription,
+            content: newPost!.content,
+            blogId: newBlog!.id,
+            blogName: newBlog!.name,
+            createdAt: newPost!.createdAt,
+            extendedLikesInfo: {
+                likesCount: 1,
+                dislikesCount: 0,
+                myStatus: likesStatuses.like,
+                newestLikes: [{
+                    addedAt: expect.any(String),
+                    userId: newUser1!.id,
+                    login: newUser1!.login
+                }]
+            }
+        })
 
         await request(app)
             .put(`/posts/${newPost!.id}/like-status`)
@@ -499,9 +495,149 @@ describe('/comments', () => {
             })
             .expect(HTTP_STATUSES.NO_CONTENT_204)
 
-        await request(app)
+        const response2 = await request(app)
             .get(`/posts/${newPost!.id}`)
             .set('Authorization', `Bearer ${token1}`)
+
+        expect(response2.body).toStrictEqual({
+            id: newPost!.id,
+            title: newPost!.title,
+            shortDescription: newPost!.shortDescription,
+            content: newPost!.content,
+            blogId: newBlog!.id,
+            blogName: newBlog!.name,
+            createdAt: newPost!.createdAt,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 1,
+                myStatus: likesStatuses.dislike,
+                newestLikes: []
+            }
+        })
+
+        await request(app)
+            .put(`/posts/${newPost!.id}/like-status`)
+            .set('Authorization', `Bearer ${token1}`)
+            .send({
+                likeStatus: likesStatuses.dislike
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        const response3 = await request(app)
+            .get(`/posts/${newPost!.id}`)
+            .set('Authorization', `Bearer ${token1}`)
+
+        expect(response3.body).toStrictEqual({
+            id: newPost!.id,
+            title: newPost!.title,
+            shortDescription: newPost!.shortDescription,
+            content: newPost!.content,
+            blogId: newBlog!.id,
+            blogName: newBlog!.name,
+            createdAt: newPost!.createdAt,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 1,
+                myStatus: likesStatuses.dislike,
+                newestLikes: []
+            }
+        })
+    })
+
+    it('+ PUT change like status post for other user with correct data', async() => {
+        await request(app)
+            .put(`/posts/${newPost!.id}/like-status`)
+            .set('Authorization', `Bearer ${token2}`)
+            .send({
+                likeStatus: likesStatuses.none
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        const response4 = await request(app)
+            .get(`/posts/${newPost!.id}`)
+            .set('Authorization', `Bearer ${token2}`)
+
+        expect(response4.body).toStrictEqual({
+            id: newPost!.id,
+            title: newPost!.title,
+            shortDescription: newPost!.shortDescription,
+            content: newPost!.content,
+            blogId: newBlog!.id,
+            blogName: newBlog!.name,
+            createdAt: newPost!.createdAt,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 1,
+                myStatus: likesStatuses.none,
+                newestLikes: []
+            }
+        })
+
+        await request(app)
+            .put(`/posts/${newPost!.id}/like-status`)
+            .set('Authorization', `Bearer ${token2}`)
+            .send({
+                likeStatus: likesStatuses.like
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        const response5 = await request(app)
+            .get(`/posts/${newPost!.id}`)
+            .set('Authorization', `Bearer ${token2}`)
+
+        expect(response5.body).toStrictEqual({
+            id: newPost!.id,
+            title: newPost!.title,
+            shortDescription: newPost!.shortDescription,
+            content: newPost!.content,
+            blogId: newBlog!.id,
+            blogName: newBlog!.name,
+            createdAt: newPost!.createdAt,
+            extendedLikesInfo: {
+                likesCount: 1,
+                dislikesCount: 1,
+                myStatus: likesStatuses.like,
+                newestLikes: [{
+                    addedAt: expect.any(String),
+                    userId: newUser2!.id,
+                    login: newUser2!.login
+                }]
+            }
+        })
+
+        await request(app)
+            .put(`/posts/${newPost!.id}/like-status`)
+            .set('Authorization', `Bearer ${token2}`)
+            .send({
+                likeStatus: likesStatuses.dislike
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        const response6 = await request(app)
+            .get(`/posts/${newPost!.id}`)
+            .set('Authorization', `Bearer ${token2}`)
+
+        expect(response6.body).toStrictEqual({
+            id: newPost!.id,
+            title: newPost!.title,
+            shortDescription: newPost!.shortDescription,
+            content: newPost!.content,
+            blogId: newBlog!.id,
+            blogName: newBlog!.name,
+            createdAt: newPost!.createdAt,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 2,
+                myStatus: likesStatuses.dislike,
+                newestLikes: []
+            }
+        })
+    })
+
+    // GET COMMENTS VISITOR
+    it('+ GET post for visitor with correct data', async() => {
+        await request(app)
+            .get(`/posts/${newPost!.id}`)
             .expect(HTTP_STATUSES.OK_200, {
                 id: newPost!.id,
                 title: newPost!.title,
@@ -512,37 +648,36 @@ describe('/comments', () => {
                 createdAt: newPost!.createdAt,
                 extendedLikesInfo: {
                     likesCount: 0,
-                    dislikesCount: 1,
-                    myStatus: likesStatuses.dislike,
+                    dislikesCount: 2,
+                    myStatus: likesStatuses.none,
                     newestLikes: []
                 }
             })
+    })
 
+    it('+ GET all posts for visitor with correct data', async() => {
         await request(app)
-            .put(`/posts/${newPost!.id}/like-status`)
-            .set('Authorization', `Bearer ${token1}`)
-            .send({
-                likeStatus: likesStatuses.dislike
-            })
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
-
-        await request(app)
-            .get(`/posts/${newPost!.id}`)
-            .set('Authorization', `Bearer ${token1}`)
+            .get(`/posts/`)
             .expect(HTTP_STATUSES.OK_200, {
-                id: newPost!.id,
-                title: newPost!.title,
-                shortDescription: newPost!.shortDescription,
-                content: newPost!.content,
-                blogId: newBlog!.id,
-                blogName: newBlog!.name,
-                createdAt: newPost!.createdAt,
-                extendedLikesInfo: {
-                    likesCount: 0,
-                    dislikesCount: 1,
-                    myStatus: likesStatuses.dislike,
-                    newestLikes: []
-                }
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [{
+                    id: newPost!.id,
+                    title: newPost!.title,
+                    shortDescription: newPost!.shortDescription,
+                    content: newPost!.content,
+                    blogId: newBlog!.id,
+                    blogName: newBlog!.name,
+                    createdAt: newPost!.createdAt,
+                    extendedLikesInfo: {
+                        likesCount: 0,
+                        dislikesCount: 2,
+                        myStatus: likesStatuses.none,
+                        newestLikes: []
+                    }
+                }]
             })
     })
 

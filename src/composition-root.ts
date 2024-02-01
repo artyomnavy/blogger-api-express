@@ -31,6 +31,7 @@ import {LikesQueryRepository} from "./repositories/likes-db-query-repository";
 import {Container} from "inversify";
 import {CommentMapper} from "./types/comment/mapper";
 import {PostMapper} from "./types/post/mapper";
+import {LikeMapper} from "./types/like/mapper";
 
 export const container = new Container()
 
@@ -76,3 +77,4 @@ container.bind(LikesRepository).to(LikesRepository)
 // Instances mappers
 container.bind(CommentMapper).to(CommentMapper)
 container.bind(PostMapper).to(PostMapper)
+container.bind(LikeMapper).to(LikeMapper)
