@@ -6,8 +6,7 @@ import {OutputBlogType} from "../src/types/blog/output";
 import {OutputUserType} from "../src/types/user/output";
 import {OutputCommentType} from "../src/types/comment/output";
 import mongoose from "mongoose";
-import {PostModelClass} from "../src/db/db";
-import {ObjectId} from "mongodb";
+
 
 const login = 'admin'
 const password = 'qwerty'
